@@ -1,160 +1,324 @@
-# 🎬 Movie Recommendation Frontend
+# 🎬 Cinefy – Scalable Movie Recommendation Platform (Frontend)
 
-A modern frontend for the **Movie Recommendation System** built with **React**, **Vite**, and **Material UI**.  
-This UI enables users to explore movies, view details, rate, like, and view personalized recommendations from the backend.
+Cinefy is a production-grade movie recommendation frontend built with **React + Vite + Material UI**, designed to integrate with a Spring Boot analytics-driven backend.
 
-> ⚡ Powered by a backend API that handles authentication, recommendations, and analytics.
+This project demonstrates:
 
----
+- Scalable frontend architecture
+- JWT-based authentication
+- Real-time analytics integration
+- Personalized recommendation rendering
+- Engagement-based trending logic
+- Clean API abstraction layer
+- Production-ready environment configuration
 
-## 🚀 Features
-
-- 🔍 Browse all movies
-- 📊 Personalized recommendations
-- ⭐ Rating & reviews
-- ❤️ Likes & watch history
-- 🔒 Authentication (Login / Register)
-- 🧠 Dynamic trending & recommended movies
-- 🎥 Poster images displayed from API
+> This is not a tutorial app.  
+> It is designed as a full-stack scalable system.
 
 ---
 
-## 📦 Built With
+# 🚀 Executive Summary
 
-- **React** (UI library)
-- **Vite** (Fast development tooling)
-- **Material UI** (UI components)
-- **React Router** (Client routing)
-- **Fetch / authFetch** API helpers
+Cinefy enables users to:
+
+- Browse movies
+- View detailed metadata
+- Like, watch, rate, and review movies
+- Receive personalized recommendations
+- View trending movies powered by analytics
+
+The frontend is stateless and communicates with a secure backend API using JWT-based authentication.
 
 ---
 
-## 📥 Getting Started
+# 🧱 System Architecture
 
-### 🧰 Prerequisites
+## High-Level Architecture
 
-Ensure you have the following installed:
+```
+                   ┌──────────────────────────────┐
+                   │          Client (Browser)     │
+                   │        React + Vite App       │
+                   └──────────────┬───────────────┘
+                                  │
+                                  │ HTTPS / REST
+                                  ▼
+                   ┌──────────────────────────────┐
+                   │       Spring Boot API        │
+                   │  Auth • Movies • Analytics   │
+                   └──────────────┬───────────────┘
+                                  │
+                     ┌────────────┴────────────┐
+                     ▼                         ▼
+        ┌──────────────────────┐   ┌──────────────────────┐
+        │ PostgreSQL Database  │   │ File Storage (Uploads)│
+        │ Movies • Stats • JWT │   │ Posters / Images      │
+        └──────────────────────┘   └──────────────────────┘
+```
 
-- Node.js (v16+)
+---
+
+# 🧠 Frontend Architecture
+
+```
+src/
+│
+├── api/               # API abstraction layer
+│   └── authFetch.js   # Secure request wrapper
+│
+├── components/        # Reusable UI components
+│   ├── MovieCard.jsx
+│   ├── Navbar.jsx
+│   └── ProtectedRoute.jsx
+│
+├── pages/             # Page-level containers
+│   ├── Dashboard.jsx
+│   ├── Movies.jsx
+│   ├── MovieDetails.jsx
+│   ├── Recommendations.jsx
+│   ├── History.jsx
+│   ├── Profile.jsx
+│   └── AdminAddMovie.jsx
+│
+├── routes/            # Route configuration
+│
+├── App.jsx
+└── main.jsx
+```
+
+### Architectural Principles
+
+- Separation of concerns
+- Stateless UI components
+- API abstraction layer
+- Centralized authentication logic
+- Environment-based configuration
+- No hardcoded backend URLs
+
+---
+
+# ✨ Core Features
+
+## 🎥 Movie Experience
+
+- Browse all movies
+- Movie detail pages
+- Dynamic poster rendering
+- Genre-based display
+- Real-time ratings
+- Reviews system
+
+## ❤️ Engagement
+
+- Like / Unlike movies
+- Watch history tracking
+- Per-user rating storage
+- Comment-based reviews
+
+## 📊 Analytics Integration
+
+Frontend integrates with backend-driven analytics:
+
+Trending score is computed using:
+
+```
+score =
+  (views_count * 2) +
+  (watch_count * 3) +
+  (likes_count * 4) +
+  (ratings_count * 2) +
+  (reviews_count * 3)
+```
+
+Analytics are stored in:
+
+- `movie_daily_stats`
+- `user_movie_ratings`
+- `movie_reviews`
+
+---
+
+# 🔐 Authentication Architecture
+
+## Flow
+
+1. User logs in
+2. Backend returns JWT
+3. Token stored in `localStorage`
+4. `authFetch` attaches:
+
+```
+Authorization: Bearer <token>
+```
+
+5. Protected routes validate token
+6. Expired token triggers logout
+
+## Route Protection
+
+Protected pages:
+
+- Recommendations
+- History
+- Profile
+- Admin
+
+---
+
+# 📦 Installation
+
+## Prerequisites
+
+- Node.js v16+
 - npm or yarn
+- Backend API running
 
----
+## Setup
 
-### 🛠 Installation
-
-1. Clone the repository:
 ```bash
 git clone https://github.com/siri-chandanak/movie-recommendation-frontend.git
 cd movie-recommendation-frontend
-```
-
-2. Install Dependencies:
-```bash
 npm install
-# or
-yarn
 ```
 
-3. Create environment configuration:
+Create `.env`:
 
-Create a .env file in the root (optional if using defaults), e.g.:
-```bash
+```
 VITE_API_BASE_URL=http://localhost:8080
 ```
 
-4. Start frontend server:
-```bash
+Run:
+
+```
 npm run dev
-# or
-yarn dev
 ```
 
-5. Open in browser:
-```bash
+Access:
+
+```
 http://localhost:5173
 ```
 
 ---
 
-## 🧠 API Requirements
+# 🔗 Required Backend Endpoints
 
-This frontend connects to a backend API that supports the following endpoints:
-
-| Endpoint | Purpose |
-|----------|----------|
-| `POST /api/auth/login` | User login |
-| `POST /api/auth/register` | User registration |
-| `GET /api/movies` | List all movies |
-| `GET /api/movies/:id` | Movie details |
-| `GET /api/movies/:id/recommendations` | Personalized recommendations |
-| `POST /api/movies/:id/rate` | Submit rating |
-| `POST /api/movies/:id/review` | Add review |
-| `GET /api/movies/:id/reviews` | List reviews |
-| `GET /api/genres` | Fetch genres |
-
-> ⚠️ Ensure the backend server is running before starting the frontend.
+| Method | Endpoint | Description |
+|--------|----------|------------|
+| POST | `/api/auth/login` | Login |
+| POST | `/api/auth/register` | Register |
+| GET | `/api/movies` | List movies |
+| GET | `/api/movies/{id}` | Movie details |
+| GET | `/api/movies/trending` | Trending |
+| GET | `/api/recommendations` | Personalized |
+| POST | `/api/movies/{id}/like` | Like |
+| POST | `/api/movies/{id}/watch` | Watch |
+| POST | `/api/movies/{id}/rate` | Rate |
+| POST | `/api/movies/{id}/review` | Review |
+| GET | `/api/genres` | Genres |
 
 ---
 
-## 🗂 Folder Structure
+# ⚙️ Production Considerations
 
-```bash
-movie-recommendation-frontend/
-├─ public/
-├─ src/
-│  ├─ components/
-│  ├─ pages/
-│  ├─ api/
-│  ├─ App.jsx
-│  └─ main.jsx
-├─ .gitignore
-├─ package.json
-└─ vite.config.js
+## Security
+
+- JWT-based authentication
+- No sensitive logic in frontend
+- Environment-based API URL
+- Protected routes
+- Token expiration validation
+
+## Performance
+
+- Component-based rendering
+- Efficient state updates
+- Backend-driven pagination ready
+- Optimized API calls
+- Lazy loading support (future enhancement)
+
+## Scalability
+
+- Backend handles recommendation logic
+- Frontend remains stateless
+- Analytics computation server-side
+- Supports Redis caching for trending (backend)
+
+---
+
+# 📊 Analytics Data Flow
+
+```
+User Interaction
+      │
+      ▼
+MovieDetails API Call
+      │
+      ▼
+AnalyticsService (Backend)
+      │
+      ▼
+movie_daily_stats table
+      │
+      ▼
+Trending API
+      │
+      ▼
+Frontend UI Ranking
 ```
 
 ---
 
-## 🔒 Authentication Flow
+# 📈 Future Roadmap
 
-- Users can **register** and **login**
-- After login, a **JWT token** is stored in `localStorage`
-- Protected routes (**recommendations, profile, history**) only work when logged in
-- Token expiration automatically triggers logout
-
----
-
-## 🧩 Authentication Helper
-
-The project contains `authFetch` which:
-
-- Adds the **Authorization header**
-- Handles **401 errors / token expiration**
-- Works with both **JSON** and **FormData** requests
+- Dark / Light theme toggle
+- Debounced search
+- Infinite scroll
+- Advanced filtering
+- Chart-based analytics dashboard
+- Server-side rendering
+- Redis caching for trending
+- Dockerized deployment
+- CI/CD pipeline
 
 ---
 
-## 🧠 Related Backend
+# 🚀 Deployment Strategy
 
-To use this frontend, see the companion backend repository:
+## Frontend
 
-📦 **Backend:** `movie-recommendation-backend`  
-(Link your backend repository here)
+- Vercel
+- Netlify
+- Nginx static hosting
 
----
+## Backend
 
-## 💡 Contributions
-
-Contributions are welcome!  
-Feel free to open issues or submit PRs for new features, bug fixes, or improvements.
-
----
-
-## ⭐ License
-
-This project is open-source and free to use.
+- Docker container
+- AWS EC2
+- Render / Railway
+- Kubernetes (scalable setup)
 
 ---
 
-## ❤️ Acknowledgements
+# 🧩 Design Philosophy
 
-Inspired by various React movie recommendation full-stack projects and tutorials online.
+- Clean architecture
+- Production-first mindset
+- Real analytics integration
+- Separation of UI and business logic
+- Scalable system thinking
+
+---
+
+# 👩‍💻 Author
+
+Built by **Siri Chandana**
+
+Full-stack implementation including:
+
+- React Frontend
+- Spring Boot Backend
+- PostgreSQL
+- JWT Security
+- Analytics Engine
+- Recommendation System
